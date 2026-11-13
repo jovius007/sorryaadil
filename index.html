@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>An Official Apology</title>
+<style>
+  :root { --bg1:#fff1e6; --bg2:#ffd6e0; --card:#ffffff; --fg:#2a2130; --muted:#6d6277; --acc:#ff5c8a; --acc2:#7a5cff; --line:#f0d9e2;
+          box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+          --bg1:#1b1326; --bg2:#2a1630; --card:#251a33; --fg:#f4ecfa; --muted:#b3a5c4; --acc:#ff7aa2; --acc2:#9b86ff; --line:#3a2b4d; } }
+  * { box-sizing:border-box; }
+  html, body { min-height:100%; margin:0; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; color:var(--fg); }
+  body { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px;
+         background:linear-gradient(160deg,var(--bg1),var(--bg2)); overflow-x:hidden; }
+  #card { position:relative; z-index:2; width:100%; max-width:420px; background:var(--card); border:1px solid var(--line);
+          border-radius:22px; padding:26px 22px; box-shadow:0 18px 50px rgba(120,60,120,.18); text-align:center; }
+  .seal { font-size:46px; animation:bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 50% { transform:translateY(-6px) rotate(6deg); } }
+  h1 { margin:6px 0 2px; font-size:24px; }
+  .sub { margin:0 0 14px; font-size:12px; letter-spacing:1.6px; text-transform:uppercase; color:var(--muted); }
+  #typed { min-height:150px; text-align:left; font-size:16px; line-height:1.6; margin:0 0 10px; white-space:pre-wrap; }
+  #typed::after { content:"▍"; color:var(--acc); animation:blink 1s steps(1) infinite; }
+  #typed.done::after { content:""; }
+  @keyframes blink { 50% { opacity:0; } }
+  h2 { font-size:19px; margin:6px 0 10px; }
+  #arena { position:relative; height:170px; }
+  button { font:inherit; cursor:pointer; border:0; border-radius:14px; }
+  #yes { position:absolute; left:50%; top:6px; transform:translateX(-50%); padding:12px 22px; font-size:17px; font-weight:700;
+         color:#fff; background:linear-gradient(135deg,var(--acc),var(--acc2)); transform-origin:center top; }
+  #no { position:absolute; left:calc(50% - 38px); top:112px; padding:9px 16px; font-size:14px; background:transparent;
+        border:1px solid var(--muted); color:var(--muted); transition:left .18s ease, top .18s ease; white-space:nowrap; }
+  .coupon { border:2px dashed var(--acc); border-radius:14px; padding:14px; margin:12px 0; text-align:left; font-size:14px; line-height:1.5; }
+  .coupon b { font-size:16px; }
+  .small { font-size:11px; color:var(--muted); }
+  #replay { padding:10px 18px; background:transparent; border:1px solid var(--muted); color:var(--fg); }
+  [hidden] { display:none !important; }
+  .rain { position:fixed; top:-40px; z-index:1; font-size:22px; opacity:.55; pointer-events:none; animation:fall linear infinite; }
+  @keyframes fall { to { transform:translateY(110vh) rotate(40deg); } }
+  #fx { position:fixed; inset:0; z-index:3; pointer-events:none; }
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="seal">🙏</div>
+  <h1>Official Apology</h1>
+  <p class="sub" id="to"></p>
+  <p id="typed"></p>
+  <div id="ask" hidden>
+    <h2>Do you forgive me?</h2>
+    <div id="arena"><button id="yes">Yes 😌</button><button id="no">No</button></div>
+  </div>
+  <div id="win" hidden>
+    <h2>Yay, we’re good! 🎉</h2>
+    <div class="coupon"><b>🎟️ Free Treat Coupon</b><br>1 double egg chicken Maggi 🍜, paid by me.<br>Want something more? Just say the word, that’s on me too.<br>
+      <span class="small">Terms: no refunds on sorry. Valid forever.</span></div>
+    <button id="replay">Watch again</button>
+  </div>
+</div>
+<canvas id="fx"></canvas>
+<script>
+const FRIEND = "Aadil";
+const lines = `Dear ${FRIEND},
+
+I messed up. I know it.
+
+So, with my whole heart, I’m really sorry, bhai. 🙏
+Let me make it up to you. Your move. 🍜`;
+const $ = id => document.getElementById(id);
+$('to').textContent = `For ${FRIEND}`;
+
+// falling emoji
+['🙏','🥺','🍜','🥚','💔','😅'].forEach((e, i) => { for (let k = 0; k < 3; k++) { const s = document.createElement('span');
+  s.className = 'rain'; s.textContent = e; s.style.left = Math.random() * 100 + 'vw';
+  s.style.animationDuration = 9 + Math.random() * 9 + 's'; s.style.animationDelay = -Math.random() * 15 + 's'; document.body.appendChild(s); } });
+
+// typewriter
+let timer;
+function typeIt() {
+  clearInterval(timer); const el = $('typed'); el.textContent = ''; el.classList.remove('done'); let i = 0;
+  $('ask').hidden = true; $('win').hidden = true;
+  timer = setInterval(() => { el.textContent = lines.slice(0, ++i);
+    if (i >= lines.length) { clearInterval(timer); el.classList.add('done'); $('ask').hidden = false; resetBtns(); } }, 28);
+}
+
+// the "No" button runs away and "Yes" grows
+const noTxt = ['No', 'Are you sure? 🤨', 'Think of the double egg chicken Maggi 🍜', 'I’ll even pay for it 💸', 'Please? 🥺',
+  'My heart is breaking 💔', 'This button is broken. Try Yes. 😇'];
+let tries = 0; const yes = $('yes'), no = $('no'), arena = $('arena');
+function resetBtns() { tries = 0; no.textContent = 'No'; no.style.left = 'calc(50% - 38px)'; no.style.top = '112px'; yes.style.transform = 'translateX(-50%)'; }
+function dodge(e) {
+  e.preventDefault(); tries++;
+  no.textContent = noTxt[Math.min(tries, noTxt.length - 1)];
+  const aw = arena.clientWidth - no.offsetWidth, ah = arena.clientHeight - no.offsetHeight;
+  no.style.left = Math.random() * aw + 'px'; no.style.top = Math.max(ah * .35, Math.random() * ah) + 'px';
+  yes.style.transform = `translateX(-50%) scale(${Math.min(1 + tries * .22, 2.4)})`;
+}
+no.addEventListener('pointerdown', dodge); no.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') dodge(e); });
+no.addEventListener('click', e => e.preventDefault());
+yes.addEventListener('click', () => { $('ask').hidden = true; $('win').hidden = false; confetti(); });
+$('replay').addEventListener('click', typeIt);
+
+// confetti
+const fx = $('fx'), g = fx.getContext('2d');
+function confetti() {
+  fx.width = innerWidth; fx.height = innerHeight; const C = ['#ff5c8a', '#7a5cff', '#ffc542', '#35d0a0', '#4db8ff'];
+  let ps = Array.from({ length: 170 }, () => ({ x: innerWidth / 2, y: innerHeight * .55, vx: (Math.random() - .5) * 14, vy: -Math.random() * 15 - 4,
+    r: 3 + Math.random() * 5, c: C[Math.random() * 5 | 0], a: Math.random() * 6, l: 1 }));
+  (function f() { g.clearRect(0, 0, fx.width, fx.height);
+    ps.forEach(p => { p.vy += .35; p.x += p.vx; p.y += p.vy; p.a += .2; p.l -= .006; g.globalAlpha = Math.max(0, p.l); g.fillStyle = p.c;
+      g.save(); g.translate(p.x, p.y); g.rotate(p.a); g.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); g.restore(); });
+    ps = ps.filter(p => p.l > 0 && p.y < fx.height + 20); if (ps.length) requestAnimationFrame(f); else g.clearRect(0, 0, fx.width, fx.height); })();
+}
+typeIt();
+</script>
+</body>
+</html>
